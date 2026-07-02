@@ -1,6 +1,7 @@
 const ALARM_NAME = "privacy-spotlight-auto-lock";
 let locked = false;
 let lastActivity = Date.now();
+const SETTINGS_VERSION = 2;
 
 function bytesToBase64(bytes) {
   let binary = "";
@@ -39,11 +40,17 @@ async function ensureDefaultPassword() {
   });
 }
 
+async function migrateSettings() {
+  const { settingsVersion = 0 } = await chrome.storage.sync.get({ settingsVersion: 0 });
+  if (settingsVersion >= SETTINGS_VERSION) return;
+  await chrome.storage.sync.set({ idleTimeout: 300, settingsVersion: SETTINGS_VERSION });
+}
+
 async function getLockSettings() {
   return chrome.storage.sync.get({
     enabled: true,
     autoLockEnabled: true,
-    idleTimeout: 20,
+    idleTimeout: 300,
     passwordHash: "",
     passwordSalt: ""
   });
@@ -91,10 +98,12 @@ async function recordActivity() {
 }
 
 chrome.runtime.onInstalled.addListener(async () => {
+  await migrateSettings();
   await ensureDefaultPassword();
   await setGlobalLocked(false);
 });
 chrome.runtime.onStartup.addListener(async () => {
+  await migrateSettings();
   await ensureDefaultPassword();
   await setGlobalLocked(false);
 });
@@ -147,9 +156,10 @@ chrome.storage.onChanged.addListener((changes, area) => {
 });
 
 Promise.all([
+  migrateSettings(),
   ensureDefaultPassword(),
   chrome.storage.session.get({ globalLocked: false, lastActivity: Date.now() })
-]).then(([, state]) => {
+]).then(([, , state]) => {
   locked = state.globalLocked;
   lastActivity = state.lastActivity;
   scheduleLock();

@@ -56,6 +56,21 @@
   );
 }
 
+/* Default privacy mode: fixed blur when the pointer leaves the current page. */
+#zcp-away-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483645;
+  pointer-events: none;
+  display: none;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+:root[data-zcp-enabled][data-zcp-away-enabled][data-zcp-away] #zcp-away-overlay {
+  display: block;
+}
+
 :root[data-zcp-enabled][data-zcp-chat][data-zcp-spotlight]:not([data-zcp-reveal-allowed])
   body::after,
 :root[data-zcp-enabled][data-zcp-locked] body::after {

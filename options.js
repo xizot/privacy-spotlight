@@ -1,12 +1,13 @@
 const DEFAULTS = {
   enabled: true,
   requireAlt: false,
-  protectionEnabled: true,
+  spotlightModeEnabled: false,
+  awayBlurEnabled: true,
   autoLockEnabled: true,
   blurRadius: 10,
   spotlightRadius: 110,
   textContrast: 85,
-  idleTimeout: 20
+  idleTimeout: 300
 };
 
 const form = document.querySelector("#settings");

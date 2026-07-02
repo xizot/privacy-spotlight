@@ -2,16 +2,16 @@
   const DEFAULTS = {
     enabled: true,
     requireAlt: false,
-    protectionEnabled: true,
+    spotlightModeEnabled: false,
+    awayBlurEnabled: true,
     autoLockEnabled: true,
     protectSidebar: true,
     protectChat: true,
     protectMedia: true,
-    spotlightEnabled: true,
     blurRadius: 10,
     spotlightRadius: 110,
     textContrast: 85,
-    idleTimeout: 20,
+    idleTimeout: 300,
     lockOnBlur: true,
     passwordHash: "",
     passwordSalt: "",
@@ -27,6 +27,8 @@
   let lockInput;
   let lastActivityReport = 0;
   let globalLocked = false;
+  let pointerInsidePage = true;
+  let awayOverlay;
 
   function setFlag(name, value) {
     root.toggleAttribute(`data-zcp-${name}`, Boolean(value));
@@ -35,16 +37,20 @@
   function applySettings(next) {
     settings = { ...DEFAULTS, ...next };
     const siteEnabled = settings.sites?.[siteKey]?.enabled === true;
-    const active = settings.enabled && siteEnabled && settings.protectionEnabled;
+    const active = settings.enabled && siteEnabled;
+    const spotlightActive = active && settings.spotlightModeEnabled;
     root.style.setProperty("--zcp-blur", `${settings.blurRadius}px`);
     root.style.setProperty("--zcp-spotlight-radius", `${settings.spotlightRadius}px`);
     root.style.setProperty("--zcp-text-contrast", `${settings.textContrast}%`);
 
     setFlag("enabled", active);
-    setFlag("sidebar", active && isZalo);
-    setFlag("chat", active);
-    setFlag("media", active && isZalo);
-    setFlag("spotlight", active);
+    setFlag("sidebar", spotlightActive && isZalo);
+    setFlag("chat", spotlightActive);
+    setFlag("media", spotlightActive && isZalo);
+    setFlag("spotlight", spotlightActive);
+    setFlag("away-enabled", active && settings.awayBlurEnabled);
+    setFlag("away", active && settings.awayBlurEnabled && !pointerInsidePage);
+    mountAwayOverlay();
     setFlag("require-alt", settings.requireAlt);
     updateRevealState();
     mountLockScreen();
@@ -56,6 +62,14 @@
     const allowed = !settings.requireAlt || altPressed;
     const siteEnabled = settings.sites?.[siteKey]?.enabled === true;
     setFlag("reveal-allowed", settings.enabled && siteEnabled && allowed);
+  }
+
+  function mountAwayOverlay() {
+    if (awayOverlay || !document.documentElement) return;
+    awayOverlay = document.createElement("div");
+    awayOverlay.id = "zcp-away-overlay";
+    awayOverlay.setAttribute("aria-hidden", "true");
+    document.documentElement.append(awayOverlay);
   }
 
   function setLocked(locked) {
@@ -208,6 +222,8 @@
   }
 
   function updatePointer(event) {
+    pointerInsidePage = true;
+    setFlag("away", false);
     root.style.setProperty("--zcp-pointer-x", `${event.clientX}px`);
     root.style.setProperty("--zcp-pointer-y", `${event.clientY}px`);
     resetIdleTimer();
@@ -236,6 +252,16 @@
   });
 
   document.addEventListener("pointermove", updatePointer, { passive: true });
+  document.documentElement.addEventListener("mouseleave", () => {
+    pointerInsidePage = false;
+    const siteEnabled = settings.sites?.[siteKey]?.enabled === true;
+    setFlag("away", settings.enabled && siteEnabled && settings.awayBlurEnabled);
+  });
+  document.documentElement.addEventListener("mouseenter", () => {
+    pointerInsidePage = true;
+    setFlag("away", false);
+    resetIdleTimer();
+  });
   document.addEventListener("pointerdown", resetIdleTimer, { passive: true });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Alt") {
@@ -252,6 +278,9 @@
   });
   window.addEventListener("blur", () => {
     altPressed = false;
+    pointerInsidePage = false;
+    const siteEnabled = settings.sites?.[siteKey]?.enabled === true;
+    setFlag("away", settings.enabled && siteEnabled && settings.awayBlurEnabled);
     updateRevealState();
   });
   window.addEventListener("focus", () => {
@@ -259,7 +288,13 @@
     else resetIdleTimer();
   });
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) resetIdleTimer();
+    if (document.hidden) {
+      pointerInsidePage = false;
+      const siteEnabled = settings.sites?.[siteKey]?.enabled === true;
+      setFlag("away", settings.enabled && siteEnabled && settings.awayBlurEnabled);
+    } else {
+      resetIdleTimer();
+    }
   });
 
 })();

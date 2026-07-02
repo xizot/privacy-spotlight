@@ -26,8 +26,16 @@
 
         <section>
           <div class="section-heading">
-            <h2>Bảo vệ</h2>
-            <button class="switch section-switch" name="protectionEnabled" type="button" role="switch" aria-checked="false" aria-label="Bật bảo vệ"></button>
+            <h2>Blur khi rời chuột</h2>
+            <button class="switch section-switch" name="awayBlurEnabled" type="button" role="switch" aria-checked="false" aria-label="Blur khi rời chuột"></button>
+          </div>
+          <p>Hiển thị bình thường khi con trỏ ở trong tab. Tự động blur 20px khi con trỏ rời khỏi trang.</p>
+        </section>
+
+        <section>
+          <div class="section-heading">
+            <h2>Spotlight</h2>
+            <button class="switch section-switch" name="spotlightModeEnabled" type="button" role="switch" aria-checked="false" aria-label="Bật spotlight"></button>
           </div>
           <label>Độ mờ <output data-for="blurRadius"></output><input name="blurRadius" type="range" min="0" max="24" step="1" /></label>
           <label>Bán kính spotlight <output data-for="spotlightRadius"></output><input name="spotlightRadius" type="range" min="60" max="240" step="10" /></label>
