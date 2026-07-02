@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cài đặt Privacy Spotlight</title>
+    <link rel="stylesheet" href="settings.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="eyebrow">PRIVACY SPOTLIGHT</p>
+        <h1>Cài đặt riêng tư</h1>
+        <p>Thay đổi được áp dụng ngay trên các tab Zalo Web đang mở.</p>
+      </header>
+
+      <form id="settings">
+        <section>
+          <h2>Chung</h2>
+          <div class="toggle"><span>Bật extension</span><button class="switch" name="enabled" type="button" role="switch" aria-checked="false" aria-label="Bật extension"></button></div>
+          <div class="toggle">
+            <span>Chỉ hiện khi giữ Alt <small>Tắt tùy chọn này để hiện khi hover</small></span>
+            <button class="switch" name="requireAlt" type="button" role="switch" aria-checked="false" aria-label="Chỉ hiện khi giữ Alt"></button>
+          </div>
+        </section>
+
+        <section>
+          <div class="section-heading">
+            <h2>Bảo vệ</h2>
+            <button class="switch section-switch" name="protectionEnabled" type="button" role="switch" aria-checked="false" aria-label="Bật bảo vệ"></button>
+          </div>
+          <label>Độ mờ <output data-for="blurRadius"></output><input name="blurRadius" type="range" min="0" max="24" step="1" /></label>
+          <label>Bán kính spotlight <output data-for="spotlightRadius"></output><input name="spotlightRadius" type="range" min="60" max="240" step="10" /></label>
+          <label>Độ tương phản <output data-for="textContrast"></output><input name="textContrast" type="range" min="45" max="100" step="5" /></label>
+        </section>
+
+        <section>
+          <div class="section-heading">
+            <h2>Tự động khóa</h2>
+            <button class="switch section-switch" name="autoLockEnabled" type="button" role="switch" aria-checked="false" aria-label="Bật tự động khóa"></button>
+          </div>
+          <label>Thời gian tự động khóa (giây)<input name="idleTimeout" class="number-input" type="number" min="0" max="3600" step="1" /></label>
+          <div class="section-divider"></div>
+          <h3>Mật khẩu mở khóa</h3>
+          <p id="password-state" class="password-state" data-configured="false">Chưa đặt mật khẩu</p>
+          <label>Mật khẩu mới<input id="new-password" type="password" minlength="4" autocomplete="new-password" /></label>
+          <div class="password-actions">
+            <button type="button" id="save-password">Lưu mật khẩu</button>
+          </div>
+          <small id="password-message" role="status">Mật khẩu tối thiểu 4 ký tự. Mặc định: 0000.</small>
+        </section>
+
+        <div class="actions">
+          <button type="button" id="reset">Khôi phục mặc định</button>
+          <span id="status" role="status"></span>
+        </div>
+      </form>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>

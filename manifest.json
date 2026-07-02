@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Privacy Spotlight",
+  "version": "0.1.0",
+  "description": "Che nội dung Zalo Web khỏi người nhìn từ phía sau.",
+  "permissions": ["storage", "activeTab", "alarms"],
+  "host_permissions": ["<all_urls>"],
+  "action": {
+    "default_title": "Privacy Spotlight",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["lock.html", "lock.css", "lock.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["content.css"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

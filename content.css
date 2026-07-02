@@ -1,0 +1,111 @@
+:root {
+  --zcp-blur: 10px;
+  --zcp-spotlight-radius: 110px;
+  --zcp-pointer-x: -999px;
+  --zcp-pointer-y: -999px;
+  --zcp-text-contrast: 85%;
+}
+
+/* Sidebar: each conversation is revealed independently on hover. */
+:root[data-zcp-enabled][data-zcp-sidebar] #conversationList .msg-item {
+  filter: blur(var(--zcp-blur)) contrast(var(--zcp-text-contrast));
+  transition: filter 120ms ease;
+}
+
+:root[data-zcp-enabled][data-zcp-sidebar][data-zcp-reveal-allowed]
+  #conversationList .msg-item:hover {
+  filter: none;
+}
+
+/* Protect identity controls in the left navigation as well. */
+:root[data-zcp-enabled][data-zcp-sidebar] #main-tab .zavatar-container,
+:root[data-zcp-enabled][data-zcp-sidebar] #contact-search input {
+  filter: blur(var(--zcp-blur));
+  transition: filter 120ms ease;
+}
+
+:root[data-zcp-enabled][data-zcp-sidebar][data-zcp-reveal-allowed]
+  #main-tab .zavatar-container:hover,
+:root[data-zcp-enabled][data-zcp-sidebar][data-zcp-reveal-allowed]
+  #contact-search input:hover,
+:root[data-zcp-enabled][data-zcp-sidebar][data-zcp-reveal-allowed]
+  #contact-search input:focus {
+  filter: none;
+}
+
+/* Chat protection is a backdrop overlay, so a clear circle can follow the pointer. */
+:root[data-zcp-enabled][data-zcp-chat][data-zcp-spotlight] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  pointer-events: none;
+  backdrop-filter: blur(var(--zcp-blur)) contrast(var(--zcp-text-contrast));
+  -webkit-backdrop-filter: blur(var(--zcp-blur)) contrast(var(--zcp-text-contrast));
+  mask-image: radial-gradient(
+    circle var(--zcp-spotlight-radius) at var(--zcp-pointer-x) var(--zcp-pointer-y),
+    transparent 0,
+    transparent calc(var(--zcp-spotlight-radius) - 20px),
+    #000 var(--zcp-spotlight-radius)
+  );
+  -webkit-mask-image: radial-gradient(
+    circle var(--zcp-spotlight-radius) at var(--zcp-pointer-x) var(--zcp-pointer-y),
+    transparent 0,
+    transparent calc(var(--zcp-spotlight-radius) - 20px),
+    #000 var(--zcp-spotlight-radius)
+  );
+}
+
+:root[data-zcp-enabled][data-zcp-chat][data-zcp-spotlight]:not([data-zcp-reveal-allowed])
+  body::after,
+:root[data-zcp-enabled][data-zcp-locked] body::after {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+#zcp-lock-screen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  z-index: 2147483647 !important;
+}
+
+#zcp-lock-screen[hidden] {
+  display: none !important;
+}
+
+:root[data-zcp-locked],
+:root[data-zcp-locked] body {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+/* When spotlight is disabled, fall back to revealing individual message blocks. */
+:root[data-zcp-enabled][data-zcp-chat]:not([data-zcp-spotlight])
+  #chatView [class*="message-item"],
+:root[data-zcp-enabled][data-zcp-chat]:not([data-zcp-spotlight])
+  #chatView [class*="chat-message"] {
+  filter: blur(var(--zcp-blur)) contrast(var(--zcp-text-contrast));
+  transition: filter 120ms ease;
+}
+
+:root[data-zcp-enabled][data-zcp-chat]:not([data-zcp-spotlight])[data-zcp-reveal-allowed]
+  #chatView [class*="message-item"]:hover,
+:root[data-zcp-enabled][data-zcp-chat]:not([data-zcp-spotlight])[data-zcp-reveal-allowed]
+  #chatView [class*="chat-message"]:hover {
+  filter: none;
+}
+
+/* Optional media protection remains local, including inside the clear spotlight. */
+:root[data-zcp-enabled][data-zcp-media] #chatView img,
+:root[data-zcp-enabled][data-zcp-media] #chatView video {
+  filter: blur(var(--zcp-blur));
+  transition: filter 120ms ease;
+}
+
+:root[data-zcp-enabled][data-zcp-media][data-zcp-reveal-allowed] #chatView img:hover,
+:root[data-zcp-enabled][data-zcp-media][data-zcp-reveal-allowed] #chatView video:hover {
+  filter: none;
+}
